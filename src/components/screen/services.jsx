@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator, Alert, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity } from "react-native";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
-import { Navbar, BackgroundWaves, ButtonGradient , servicesStyles} from "../styles/globalStyles";
+import { Navbar, BackgroundWaves, servicesStyles } from "../styles/globalStyles";
+import { showAlert } from "../utils/alertMessage";
 import { LinearGradient } from "expo-linear-gradient";
-import { Feather } from "@expo/vector-icons"; //https://icons.expo.fyi/Index
-
+import { Feather } from "@expo/vector-icons";
 
 export default function Services({ navigation }) {
   const [services, setServices] = useState([]);
@@ -17,16 +17,13 @@ export default function Services({ navigation }) {
       const lista = [];
 
       querySnapshot.forEach((doc) => {
-        lista.push({
-          id: doc.id,
-          ...doc.data(),
-        });
+        lista.push({ id: doc.id, ...doc.data() });
       });
 
       setServices(lista);
     } catch (error) {
       console.error("Error al obtener servicios:", error);
-      Alert.alert("Error", "No se pudieron cargar los servicios.");
+      showAlert("Error", "services-fetch-error");
     } finally {
       setCargando(false);
     }
@@ -38,59 +35,36 @@ export default function Services({ navigation }) {
 
   const getServiceTheme = (nombre) => {
     const nameLower = nombre?.toLowerCase() || "";
-    
-    if (nameLower.includes("soporte") || nameLower.includes("reparacion")) {
-      return { icon: "headphones", color: "#FF4D79" };
-    }
-    if (nameLower.includes("psicologia") || nameLower.includes("mente")) {
-      return { icon: "activity", color: "#22C55E" };
-    }
-    if (nameLower.includes("medicina") || nameLower.includes("medico")) {
-      return { icon: "plus", color: "#38BDF8" };
-    }
-    
+    if (nameLower.includes("soporte") || nameLower.includes("reparacion")) return { icon: "headphones", color: "#FF4D79" };
+    if (nameLower.includes("psicologia") || nameLower.includes("mente")) return { icon: "activity", color: "#22C55E" };
+    if (nameLower.includes("medicina") || nameLower.includes("medico")) return { icon: "plus", color: "#38BDF8" };
     return { icon: "grid", color: "#FFA94D" }; 
   };
 
   return (
-    <LinearGradient
-      colors={["#16132b", "#0F172A", "#080c17"]}
-      style={servicesStyles.mainContainer}
-    >
+    <LinearGradient colors={["#16132b", "#0F172A", "#080c17"]} style={servicesStyles.mainContainer}>
       <BackgroundWaves />
-      
       <Navbar navigation={navigation} />
 
-      <ScrollView 
-        contentContainerStyle={servicesStyles.contentContainer} 
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={servicesStyles.volverContainer}>
-          <ButtonGradient
-            text="Volver"
-            iconName="arrow-left"
-            onPress={() => navigation.navigate("Home")}
-            width={130}
-            height={55}
-          />
-        </View>
+      <ScrollView contentContainerStyle={servicesStyles.contentContainer} showsVerticalScrollIndicator={false}>
+        <Text style={servicesStyles.title}>Servicios</Text>
 
         {cargando ? (
-          <ActivityIndicator size="large" color="#FF2DA0" style={{ marginTop: 50 }} />
+          <ActivityIndicator size="large" color="#FF2DA0" style={servicesStyles.loader} />
         ) : (
           services.map((item) => {
-            const theme = getServiceTheme(item.name);
+            const theme = item.icon && item.color 
+              ? { icon: item.icon, color: item.color } 
+              : getServiceTheme(item.name);
 
             return (
               <View key={item.id} style={[servicesStyles.card, { borderLeftColor: theme.color }]}>
                 
                 <View style={servicesStyles.cardTopRow}>
-
                   <View style={servicesStyles.iconBox}>
                     <Feather name={theme.icon} size={28} color={theme.color} />
                   </View>
                   
-
                   <View style={servicesStyles.infoContainer}>
                     <Text style={servicesStyles.serviceName}>{item.name}</Text>
                     <Text style={servicesStyles.serviceDescription}>{item.description}</Text>
@@ -102,10 +76,7 @@ export default function Services({ navigation }) {
                   </View>
                 </View>
 
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => navigation.navigate("Agendar", { servicio: item })}
-                >
+                <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate("Agendar", { servicio: item })}>
                   <LinearGradient
                     colors={["#FFA94D", "#FF2DA0"]}
                     style={servicesStyles.agendarBtn}

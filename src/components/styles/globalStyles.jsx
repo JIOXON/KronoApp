@@ -76,28 +76,23 @@ const Navbar = ({ navigation }) => {
       .catch((error) => console.log(error));
   };
 
+  const state = navigation.getState();
+  const canGoBack = state ? state.index > 0 : false;
+
   return (
-    <View
-      style={{
-        paddingTop: 50,
-        paddingBottom: 15,
-        paddingHorizontal: 15,
-        width: "100%",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        backgroundColor: "#16132b",
-        borderBottomWidth: 1,
-        borderBottomColor: "rgba(255,255,255,0.03)",
-      }}
-    >
-      <Logo
-        size={60}
-        onPress={() =>
-          navigation.reset({ index: 0, routes: [{ name: "Home" }] })
-        }
-      />
-      <View style={{ width: 110, marginRight: 5 }}>
+    <View style={navbarStyles.container}>
+      <View style={navbarStyles.sideBox}>
+        {canGoBack && (
+          <ButtonGradient
+            text="Volver"
+            iconName="arrow-left"
+            onPress={() => navigation.goBack()}
+            height={55}
+            width={110}
+          />
+        )}
+      </View>
+      <View style={navbarStyles.sideBox}>
         <ButtonGradient
           text="Salir"
           iconName="log-out"
@@ -109,6 +104,22 @@ const Navbar = ({ navigation }) => {
     </View>
   );
 };
+
+const navbarStyles = StyleSheet.create({
+  container: {
+    paddingTop: 50,
+    paddingBottom: 15,
+    paddingHorizontal: 15,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#16132b",
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.03)",
+  },
+  sideBox: { width: 110, marginRight: 5 },
+});
 
 const BackgroundWaves = () => (
   <View
@@ -135,7 +146,7 @@ const BackgroundWaves = () => (
   </View>
 );
 
-//Estilos base o predeterminados por pagina
+// ESTILOS BASE
 const baseStyles = {
   mainContainer: { flex: 1 },
   volverContainer: { alignItems: "center", marginTop: 10, marginBottom: 25 },
@@ -148,7 +159,6 @@ const baseStyles = {
   },
 };
 
-//
 const authBaseStyles = {
   contentContainer: {
     flex: 1,
@@ -184,46 +194,261 @@ const authBaseStyles = {
   input: { flex: 1, color: "#ffffff", fontSize: 15 },
 };
 
-//Estilos servies.jsx
-const servicesStyles = StyleSheet.create({
+// ESTILOS POR PANTALLA
+
+const adminStyles = StyleSheet.create({
   mainContainer: baseStyles.mainContainer,
-  contentContainer: { paddingHorizontal: 20, paddingBottom: 40 },
-  volverContainer: baseStyles.volverContainer,
-  card: { ...baseStyles.cardGlass, marginBottom: 20, borderLeftWidth: 4 },
-  cardTopRow: { flexDirection: "row", alignItems: "center" },
+  scrollContent: { padding: 20, paddingBottom: 50 },
+  title: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#fff",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  subtitle: { color: "#fff", fontSize: 16, marginTop: 15, marginBottom: 15 },
+  gridContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginBottom: 30,
+  },
+  gridItem: {
+    width: "23%",
+    aspectRatio: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+    borderWidth: 2,
+    borderRadius: 12,
+  },
+  gridItemText: {
+    color: "#fff",
+    fontSize: 10,
+    marginTop: 5,
+    textAlign: "center",
+  },
+});
+
+const agendarStyles = StyleSheet.create({
+  mainContainer: baseStyles.mainContainer,
+  loaderContainer: { flex: 1, justifyContent: "center" },
+  scrollContent: { paddingHorizontal: 20, paddingBottom: 40 },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#ffffff",
+    textAlign: "center",
+    marginBottom: 25,
+  },
+  infoCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.03)",
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 30,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+  },
   iconBox: {
-    width: 65,
-    height: 65,
-    borderRadius: 18,
+    width: 60,
+    height: 60,
+    borderRadius: 15,
     backgroundColor: "rgba(255,255,255,0.04)",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 15,
+    marginRight: 20,
   },
-  infoContainer: { flex: 1 },
-  serviceName: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#ffffff",
-    marginBottom: 4,
-  },
-  serviceDescription: { fontSize: 14, color: "#94A3B8", marginBottom: 8 },
-  timeRow: { flexDirection: "row", alignItems: "center" },
-  timeText: { fontSize: 14, color: "#94A3B8", marginLeft: 6 },
-  agendarBtn: {
-    marginTop: 20,
-    width: 150,
-    height: 45,
-    borderRadius: 30,
+  durationLabel: { color: "#94A3B8", fontSize: 16 },
+  durationValue: { fontSize: 22, fontWeight: "bold" },
+  sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
+    marginBottom: 15,
   },
-  agendarText: { color: "#ffffff", fontSize: 16, fontWeight: "bold" },
+  sectionTitle: {
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "600",
+    marginLeft: 8,
+  },
+  gridContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  dateItem: {
+    backgroundColor: "rgba(255,255,255,0.03)",
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+    marginBottom: 12,
+    width: "31%",
+    alignItems: "center",
+  },
+  dateText: { color: "#94A3B8", fontSize: 15 },
+  timeItem: {
+    backgroundColor: "rgba(255,255,255,0.03)",
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+    marginBottom: 12,
+    width: "23%",
+    alignItems: "center",
+  },
+  timeText: { color: "#94A3B8", fontSize: 15 },
 });
 
-//Estilos misTurnos.jsx
+const confStyles = StyleSheet.create({
+  mainContainer: baseStyles.mainContainer,
+  contentContainer: authBaseStyles.contentContainer,
+  iconCircle: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: "rgba(34, 197, 94, 0.1)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#ffffff",
+    textAlign: "center",
+  },
+  subTitle: {
+    fontSize: 16,
+    color: "#94A3B8",
+    textAlign: "center",
+    marginTop: 8,
+    marginBottom: 40,
+  },
+  summaryCard: {
+    ...baseStyles.cardGlass,
+    borderRadius: 25,
+    padding: 25,
+    marginBottom: 40,
+    width: "100%",
+  },
+  serviceLabel: {
+    color: "#94A3B8",
+    fontSize: 14,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 5,
+  },
+  serviceValue: { color: "#38BDF8", fontSize: 22, fontWeight: "bold" },
+  divider: {
+    height: 1,
+    backgroundColor: "rgba(255,255,255,0.1)",
+    marginVertical: 20,
+  },
+  dateTimeRow: { flexDirection: "row", justifyContent: "space-between" },
+  infoBox: { flexDirection: "row", alignItems: "center" },
+  infoText: {
+    color: "#E2E8F0",
+    fontSize: 16,
+    marginLeft: 10,
+    fontWeight: "500",
+  },
+});
+
+const fpStyles = StyleSheet.create({
+  mainContainer: baseStyles.mainContainer,
+  contentContainer: authBaseStyles.contentContainer,
+  backButton: { position: "absolute", top: 50, left: 20, padding: 10 },
+  title: { ...authBaseStyles.title, fontSize: 32 },
+  subTitle: { ...authBaseStyles.subTitle, marginVertical: 20, lineHeight: 20 },
+  inputWrapper: { ...authBaseStyles.inputWrapper, marginBottom: 25 },
+  iconLeft: authBaseStyles.iconLeft,
+  input: authBaseStyles.input,
+});
+
+const homeStyles = StyleSheet.create({
+  mainContainer: baseStyles.mainContainer,
+  contentContainer: {
+    ...authBaseStyles.contentContainer,
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+  },
+  title: { ...authBaseStyles.title, fontSize: 38, letterSpacing: 1 },
+  subTitle: { ...authBaseStyles.subTitle, marginBottom: 40 },
+  loader: { marginTop: 20 },
+  cardsWrapper: { width: "100%", paddingHorizontal: 10 },
+  cardContainer: {
+    ...baseStyles.cardGlass,
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 25,
+  },
+  iconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 18,
+  },
+  textContainer: { flex: 1 },
+  cardTitle: {
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  cardDescription: {
+    color: "#94A3B8",
+    fontSize: 13,
+    lineHeight: 18,
+    paddingRight: 10,
+  },
+});
+
+const loginStyles = StyleSheet.create({
+  mainContainer: baseStyles.mainContainer,
+  keyboardView: { flex: 1 },
+  scrollGrow: { flexGrow: 1, justifyContent: "center" },
+  contentContainer: authBaseStyles.contentContainer,
+  title: { ...authBaseStyles.title, fontSize: 38, letterSpacing: 1 },
+  subTitle: { ...authBaseStyles.subTitle, marginBottom: 35 },
+  inputWrapper: authBaseStyles.inputWrapper,
+  iconLeft: authBaseStyles.iconLeft,
+  input: authBaseStyles.input,
+  forgotPasswordContainer: { alignSelf: "flex-end", marginBottom: 30 },
+  forgotPasswordText: { color: "#FF4D79", fontSize: 14, fontWeight: "500" },
+  dividerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    marginVertical: 25,
+  },
+  line: { flex: 1, height: 1, backgroundColor: "rgba(255,255,255,0.15)" },
+  dividerText: { color: "#94A3B8", marginHorizontal: 15, fontWeight: "600" },
+  registerButtonWrapper: { width: "100%" },
+  outlineButtonBorder: { width: "100%", padding: 2, borderRadius: 30 },
+  outlineButtonInner: {
+    backgroundColor: "#0d1326",
+    borderRadius: 28,
+    height: 53,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  outlineButtonText: { color: "#FF6B8A", fontWeight: "bold", fontSize: 16 },
+  footerText: {
+    marginTop: 40,
+    color: "#64748B",
+    fontSize: 12,
+    textAlign: "center",
+    lineHeight: 18,
+  },
+  footerLink: { color: "#FF4D79" },
+});
+
 const misTurnosStyles = StyleSheet.create({
   mainContainer: baseStyles.mainContainer,
   contentContainer: { flex: 1, paddingHorizontal: 20, paddingTop: 10 },
@@ -234,6 +459,7 @@ const misTurnosStyles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 25,
   },
+  loader: { marginTop: 50 },
   card: {
     ...baseStyles.cardGlass,
     borderRadius: 16,
@@ -269,205 +495,19 @@ const misTurnosStyles = StyleSheet.create({
   },
   btnText: { color: "#ffffff", fontSize: 14, fontWeight: "600" },
   emptyText: { color: "#94A3B8", textAlign: "center", marginTop: 30 },
-  volverContainer: baseStyles.volverContainer,
 });
 
-//Estilos agendar.jsx
-const agendarStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 25,
-    backgroundColor: "#0F172A",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 25,
-    textAlign: "center",
-    color: "#E2E8F0",
-  },
-  card: {
-    backgroundColor: "#1E293B",
-    padding: 20,
-    borderRadius: 20,
-    marginBottom: 25,
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 8,
-  },
-  service: { fontSize: 20, fontWeight: "bold", color: "#38BDF8" },
-  duration: { color: "#94A3B8", marginTop: 5 },
-  label: {
-    fontWeight: "600",
-    marginBottom: 6,
-    marginTop: 10,
-    color: "#CBD5F5",
-  },
-  input: {
-    backgroundColor: "#ffffff",
-    padding: 14,
-    borderRadius: 15,
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: "#334155",
-    color: "#E2E8F0",
-  },
-  buttonContainer: { marginTop: 25, alignItems: "center" },
-  option: {
-    backgroundColor: "#1E293B",
-    padding: 10,
-    borderRadius: 10,
-    margin: 5,
-    color: "#E2E8F0",
-  },
-  optionSelected: { backgroundColor: "#22C55E", color: "#fff" },
-});
-
-//Estilos confirmar.jsx
-const confStyles = StyleSheet.create({
-  mainContainer: baseStyles.mainContainer,
-  contentContainer: authBaseStyles.contentContainer,
-  iconCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: "rgba(34, 197, 94, 0.1)",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#ffffff",
-    textAlign: "center",
-  },
-  subTitle: {
-    fontSize: 16,
-    color: "#94A3B8",
-    textAlign: "center",
-    marginTop: 8,
-    marginBottom: 40,
-  },
-  summaryCard: {
-    ...baseStyles.cardGlass,
-    borderRadius: 25,
-    padding: 25,
-    marginBottom: 40,
-  },
-  serviceLabel: {
-    color: "#94A3B8",
-    fontSize: 14,
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginBottom: 5,
-  },
-  serviceValue: { color: "#38BDF8", fontSize: 22, fontWeight: "bold" },
-  divider: {
-    height: 1,
-    backgroundColor: "rgba(255,255,255,0.1)",
-    marginVertical: 20,
-  },
-  dateTimeRow: { flexDirection: "row", justifyContent: "space-between" },
-  infoBox: { flexDirection: "row", alignItems: "center" },
-  infoText: {
-    color: "#E2E8F0",
-    fontSize: 16,
-    marginLeft: 10,
-    fontWeight: "500",
-  },
-  buttonWrapper: { width: "100%" },
-});
-
-//Estilos home.jsx
-const homeStyles = StyleSheet.create({
-  mainContainer: baseStyles.mainContainer,
-  contentContainer: {
-    ...authBaseStyles.contentContainer,
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-  },
-  title: { ...authBaseStyles.title, fontSize: 38, letterSpacing: 1 },
-  subTitle: { ...authBaseStyles.subTitle, marginBottom: 40 },
-  cardsWrapper: { width: "100%", paddingHorizontal: 10 },
-  cardContainer: {
-    ...baseStyles.cardGlass,
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 25,
-  },
-  iconCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 18,
-  },
-  textContainer: { flex: 1 },
-  cardTitle: {
-    color: "#ffffff",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  cardDescription: {
-    color: "#94A3B8",
-    fontSize: 13,
-    lineHeight: 18,
-    paddingRight: 10,
-  },
-});
-
-//Estilos login.jsx
-const loginStyles = StyleSheet.create({
-  mainContainer: baseStyles.mainContainer,
-  contentContainer: authBaseStyles.contentContainer,
-  title: { ...authBaseStyles.title, fontSize: 38, letterSpacing: 1 },
-  subTitle: { ...authBaseStyles.subTitle, marginBottom: 35 },
-  inputWrapper: authBaseStyles.inputWrapper,
-  iconLeft: authBaseStyles.iconLeft,
-  input: authBaseStyles.input,
-  forgotPasswordContainer: { alignSelf: "flex-end", marginBottom: 30 },
-  forgotPasswordText: { color: "#FF4D79", fontSize: 14, fontWeight: "500" },
-  dividerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    marginVertical: 25,
-  },
-  line: { flex: 1, height: 1, backgroundColor: "rgba(255,255,255,0.15)" },
-  dividerText: { color: "#94A3B8", marginHorizontal: 15, fontWeight: "600" },
-  outlineButtonBorder: { width: "100%", padding: 2, borderRadius: 30 },
-  outlineButtonInner: {
-    backgroundColor: "#0d1326",
-    borderRadius: 28,
-    height: 53,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  outlineButtonText: { color: "#FF6B8A", fontWeight: "bold", fontSize: 16 },
-  footerText: {
-    marginTop: 40,
-    color: "#64748B",
-    fontSize: 12,
-    textAlign: "center",
-    lineHeight: 18,
-  },
-  footerLink: { color: "#FF4D79" },
-});
-
-//Estilos register.jsx
 const registerStyles = StyleSheet.create({
   mainContainer: baseStyles.mainContainer,
+  keyboardView: { flex: 1 },
+  scrollGrow: { flexGrow: 1, justifyContent: "center" },
   contentContainer: authBaseStyles.contentContainer,
   title: { ...authBaseStyles.title, fontSize: 32 },
   subTitle: { ...authBaseStyles.subTitle, marginBottom: 30 },
   inputWrapper: authBaseStyles.inputWrapper,
   iconLeft: authBaseStyles.iconLeft,
   input: authBaseStyles.input,
+  loaderWrapper: { marginTop: 20, width: "100%", alignItems: "center" },
   footerContainer: { marginTop: 35, alignItems: "center" },
   footerText: { color: "#94A3B8", fontSize: 15, marginBottom: 8 },
   loginLinkText: {
@@ -478,19 +518,54 @@ const registerStyles = StyleSheet.create({
   },
 });
 
-//Estilos forgotPassword.jsx
-const fpStyles = StyleSheet.create({
+const servicesStyles = StyleSheet.create({
   mainContainer: baseStyles.mainContainer,
-  contentContainer: authBaseStyles.contentContainer,
-  backButton: { position: "absolute", top: 50, left: 20, padding: 10 },
-  title: { ...authBaseStyles.title, fontSize: 32 },
-  subTitle: { ...authBaseStyles.subTitle, marginVertical: 20, lineHeight: 20 },
-  inputWrapper: { ...authBaseStyles.inputWrapper, marginBottom: 25 },
-  iconLeft: authBaseStyles.iconLeft,
-  input: authBaseStyles.input,
+  contentContainer: { paddingHorizontal: 20, paddingBottom: 40 },
+  title: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#ffffff",
+    textAlign: "center",
+    marginBottom: 20,
+    marginTop: 10,
+  },
+  loader: { marginTop: 50 },
+  card: { ...baseStyles.cardGlass, marginBottom: 20, borderLeftWidth: 4 },
+  cardTopRow: { flexDirection: "row", alignItems: "center" },
+  iconBox: {
+    width: 65,
+    height: 65,
+    borderRadius: 18,
+    backgroundColor: "rgba(255,255,255,0.04)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 15,
+  },
+  infoContainer: { flex: 1 },
+  serviceName: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#ffffff",
+    marginBottom: 4,
+  },
+  serviceDescription: { fontSize: 14, color: "#94A3B8", marginBottom: 8 },
+  timeRow: { flexDirection: "row", alignItems: "center" },
+  timeText: { fontSize: 14, color: "#94A3B8", marginLeft: 6 },
+  agendarBtn: {
+    marginTop: 20,
+    width: 150,
+    height: 45,
+    borderRadius: 30,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+  },
+  agendarText: { color: "#ffffff", fontSize: 16, fontWeight: "bold" },
 });
 
 export {
+  adminStyles,
   agendarStyles,
   confStyles,
   fpStyles,

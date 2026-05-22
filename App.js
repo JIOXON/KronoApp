@@ -9,6 +9,7 @@ import Confirmacion from "./src/components/screen/confirmacion";
 import Agendar from "./src/components/screen/agendar";
 import MisTurnos from "./src/components/screen/misTurnos";
 import ForgotPassword from "./src/components/screen/forgotPassword";
+import AdminPanel from "./src/components/screen/adminPanel";
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +25,7 @@ export default function App() {
         <Stack.Screen name="Agendar" component={Agendar} />
         <Stack.Screen name="Confirmacion" component={Confirmacion} />
         <Stack.Screen name="MisTurnos" component={MisTurnos} />
+        <Stack.Screen name="AdminPanel" component={AdminPanel} />
 
 
       </Stack.Navigator>

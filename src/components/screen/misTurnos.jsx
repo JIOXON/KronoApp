@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, StyleSheet, } from "react-native";
-import { collection, query, where, doc, updateDoc, onSnapshot, } from "firebase/firestore";
-import { Navbar, BackgroundWaves, ButtonGradient, misTurnosStyles } from "../styles/globalStyles";
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from "react-native";
+import { collection, query, where, doc, updateDoc, onSnapshot } from "firebase/firestore";
+import { Navbar, BackgroundWaves, misTurnosStyles } from "../styles/globalStyles";
 import { showAlert } from "../utils/alertMessage";
 import { LinearGradient } from "expo-linear-gradient";
 import { auth, db } from "../../data/firebaseconfig";
@@ -14,10 +14,7 @@ export default function MisTurnos({ navigation }) {
     const user = auth.currentUser;
     if (!user) return;
 
-    const q = query(
-      collection(db, "turnos"),
-      where("clienteId", "==", user.uid),
-    );
+    const q = query(collection(db, "turnos"), where("clienteId", "==", user.uid));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const lista = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
@@ -41,14 +38,10 @@ export default function MisTurnos({ navigation }) {
 
   const getStatusColor = (estado) => {
     switch (estado) {
-      case "confirmado":
-        return "#22C55E";
-      case "cancelado":
-        return "#EF4444";
-      case "atendido":
-        return "#38BDF8";
-      default:
-        return "#94A3B8";
+      case "confirmado": return "#22C55E";
+      case "cancelado": return "#EF4444";
+      case "atendido": return "#38BDF8";
+      default: return "#94A3B8";
     }
   };
 
@@ -63,6 +56,7 @@ export default function MisTurnos({ navigation }) {
         <Text style={[misTurnosStyles.statusText, { color: statusColor }]}>
           Estado: {item.estado?.toUpperCase()}
         </Text>
+        
         {item.estado === "confirmado" && (
           <View style={misTurnosStyles.buttonsContainer}>
             <TouchableOpacity
@@ -82,10 +76,8 @@ export default function MisTurnos({ navigation }) {
             >
               <Text style={misTurnosStyles.btnText}>Reprogramar</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={misTurnosStyles.cancelarBtn}
-              onPress={() => cancelarTurno(item.id)}
-            >
+            
+            <TouchableOpacity style={misTurnosStyles.cancelarBtn} onPress={() => cancelarTurno(item.id)}>
               <Text style={misTurnosStyles.btnText}>Cancelar</Text>
             </TouchableOpacity>
           </View>
@@ -95,40 +87,20 @@ export default function MisTurnos({ navigation }) {
   };
 
   return (
-    <LinearGradient
-      colors={["#16132b", "#0F172A", "#080c17"]}
-      style={misTurnosStyles.mainContainer}
-    >
+    <LinearGradient colors={["#16132b", "#0F172A", "#080c17"]} style={misTurnosStyles.mainContainer}>
       <BackgroundWaves />
       <Navbar navigation={navigation} />
       <View style={misTurnosStyles.contentContainer}>
-        <View style={misTurnosStyles.volverContainer}>
-          <ButtonGradient
-            text="Volver"
-            iconName="arrow-left"
-            onPress={() =>
-              navigation.reset({ index: 0, routes: [{ name: "Home" }] })
-            }
-            width={130}
-            height={45}
-          />
-        </View>
         <Text style={misTurnosStyles.title}>Mis Turnos</Text>
         {cargando ? (
-          <ActivityIndicator
-            size="large"
-            color="#38BDF8"
-            style={{ marginTop: 50 }}
-          />
+          <ActivityIndicator size="large" color="#38BDF8" style={misTurnosStyles.loader} />
         ) : (
           <FlatList
             data={turnos}
             keyExtractor={(item) => item.id}
             renderItem={renderItem}
             ListEmptyComponent={
-              <Text style={misTurnosStyles.emptyText}>
-                No tienes turnos agendados.
-              </Text>
+              <Text style={misTurnosStyles.emptyText}>No tienes turnos agendados.</Text>
             }
           />
         )}

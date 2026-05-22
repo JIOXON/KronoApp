@@ -1,17 +1,14 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Navbar, BackgroundWaves, ButtonGradient, confStyles} from "../styles/globalStyles";
+import { View, Text } from "react-native";
+import { Navbar, BackgroundWaves, confStyles} from "../styles/globalStyles";
 import { LinearGradient } from "expo-linear-gradient";
-import { Feather } from "@expo/vector-icons"; //https://icons.expo.fyi/Index
+import { Feather } from "@expo/vector-icons"; 
 
 export default function Confirmacion({ route, navigation }) {
   const { servicio, fecha, hora } = route.params;
 
   return (
-    <LinearGradient
-      colors={["#16132b", "#0F172A", "#080c17"]}
-      style={confStyles.mainContainer}
-    >
+    <LinearGradient colors={["#16132b", "#0F172A", "#080c17"]} style={confStyles.mainContainer}>
       <BackgroundWaves />
       <Navbar navigation={navigation} />
       <View style={confStyles.contentContainer}>
@@ -19,9 +16,8 @@ export default function Confirmacion({ route, navigation }) {
           <Feather name="check-circle" size={80} color="#22C55E" />
         </View>
         <Text style={confStyles.title}>¡Turno Confirmado!</Text>
-        <Text style={confStyles.subTitle}>
-          Tu cita ha sido programada con éxito.
-        </Text>
+        <Text style={confStyles.subTitle}>Tu cita ha sido programada con éxito.</Text>
+        
         <View style={confStyles.summaryCard}>
           <Text style={confStyles.serviceLabel}>Servicio</Text>
           <Text style={confStyles.serviceValue}>{servicio}</Text>
@@ -36,15 +32,6 @@ export default function Confirmacion({ route, navigation }) {
               <Text style={confStyles.infoText}>{hora}</Text>
             </View>
           </View>
-        </View>
-        <View style={confStyles.buttonWrapper}>
-          <ButtonGradient
-            text="Volver al Inicio"
-            iconName="home"
-            onPress={() => navigation.navigate("Home")}
-            width="100%"
-            height={55}
-          />
         </View>
       </View>
     </LinearGradient>

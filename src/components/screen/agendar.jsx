@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity, StyleSheet, } from "react-native";
-import { collection, addDoc, query, where, getDocs, doc, updateDoc, } from "firebase/firestore";
-import { Navbar, BackgroundWaves, ButtonGradient, } from "../styles/globalStyles";
+import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity } from "react-native";
+import { collection, addDoc, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
+import { Navbar, BackgroundWaves, ButtonGradient, agendarStyles } from "../styles/globalStyles";
 import { showAlert } from "../utils/alertMessage";
 import { LinearGradient } from "expo-linear-gradient";
-import { Feather } from "@expo/vector-icons"; //https://icons.expo.fyi/Index
+import { Feather } from "@expo/vector-icons";
 import { auth, db } from "../../data/firebaseconfig";
 
 export default function Agendar({ route, navigation }) {
@@ -52,13 +52,11 @@ export default function Agendar({ route, navigation }) {
 
     while (fechas.length < diasAProyectar) {
       fechaActual.setDate(fechaActual.getDate() + 1);
-
       if (fechaActual.getDay() === 0) continue;
 
       let dia = fechaActual.getDate().toString().padStart(2, "0");
       let mes = (fechaActual.getMonth() + 1).toString().padStart(2, "0");
       let anio = fechaActual.getFullYear();
-
       fechas.push(`${dia}/${mes}/${anio}`);
     }
     return fechas;
@@ -67,20 +65,15 @@ export default function Agendar({ route, navigation }) {
   useEffect(() => {
     const proximosDias = generarFechasFuturas(6);
     setFechasDisponibles(proximosDias);
-
     const duracion = parseInt(servicio.duration) || 30;
     setHorasGeneradas(generarIntervalos(duracion));
-
     setCargandoConfig(false);
   }, [servicio]);
 
   const consultarDisponibilidad = async (fechaSeleccionada) => {
     setCargando(true);
     try {
-      const q = query(
-        collection(db, "turnos"),
-        where("fecha", "==", fechaSeleccionada),
-      );
+      const q = query(collection(db, "turnos"), where("fecha", "==", fechaSeleccionada));
       const querySnapshot = await getDocs(q);
       const ocupadas = [];
       querySnapshot.forEach((documento) => {
@@ -110,11 +103,7 @@ export default function Agendar({ route, navigation }) {
     }
     const user = auth.currentUser;
     try {
-      const q = query(
-        collection(db, "turnos"),
-        where("fecha", "==", fecha),
-        where("hora", "==", hora),
-      );
+      const q = query(collection(db, "turnos"), where("fecha", "==", fecha), where("hora", "==", hora));
       const checkSnapshot = await getDocs(q);
       const choqueReal = checkSnapshot.docs.find(
         (doc) => doc.id !== idEditar && doc.data().estado !== "cancelado",
@@ -135,10 +124,7 @@ export default function Agendar({ route, navigation }) {
           estado: "confirmado",
         });
         showAlert("Éxito", "schedule-success", () =>
-          navigation.reset({
-            index: 1,
-            routes: [{ name: "Home" }, { name: "MisTurnos" }],
-          }),
+          navigation.reset({ index: 1, routes: [{ name: "Home" }, { name: "MisTurnos" }] }),
         );
       } else {
         await addDoc(collection(db, "turnos"), {
@@ -152,11 +138,7 @@ export default function Agendar({ route, navigation }) {
           creadoEn: new Date(),
           estado: "confirmado",
         });
-        navigation.navigate("Confirmacion", {
-          servicio: servicio.name,
-          fecha,
-          hora,
-        });
+        navigation.navigate("Confirmacion", { servicio: servicio.name, fecha, hora });
       }
     } catch (error) {
       showAlert("Error", "generic-error");
@@ -165,190 +147,74 @@ export default function Agendar({ route, navigation }) {
 
   if (cargandoConfig)
     return (
-      <LinearGradient
-        colors={["#16132b", "#0F172A", "#080c17"]}
-        style={[{ flex: 1, justifyContent: "center" }]}
-      >
+      <LinearGradient colors={["#16132b", "#0F172A", "#080c17"]} style={agendarStyles.loaderContainer}>
         <ActivityIndicator size="large" color="#FF2DA0" />
       </LinearGradient>
     );
 
   return (
-    <LinearGradient
-      colors={["#16132b", "#0F172A", "#080c17"]}
-      style={{ flex: 1 }}
-    >
+    <LinearGradient colors={["#16132b", "#0F172A", "#080c17"]} style={agendarStyles.mainContainer}>
       <BackgroundWaves />
       <Navbar navigation={navigation} />
-      <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
-      >
-        <View style={{ alignItems: "center", marginTop: 10, marginBottom: 15 }}>
-          <ButtonGradient
-            text="Volver"
-            iconName="arrow-left"
-            onPress={() => navigation.goBack()}
-            width={130}
-            height={55}
-          />
-        </View>
-        <Text
-          style={{
-            fontSize: 28,
-            fontWeight: "bold",
-            color: "#ffffff",
-            textAlign: "center",
-            marginBottom: 25,
-          }}
-        >
+      <ScrollView contentContainerStyle={agendarStyles.scrollContent}>
+        
+        <Text style={agendarStyles.title}>
           {idEditar ? "Reprogramar\n" : "Agendar\n"}
           {servicio.name}
         </Text>
 
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            backgroundColor: "rgba(255,255,255,0.03)",
-            borderRadius: 20,
-            padding: 20,
-            marginBottom: 30,
-            borderWidth: 1,
-            borderColor: "rgba(255,255,255,0.08)",
-          }}
-        >
-          <View
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: 15,
-              backgroundColor: "rgba(255,255,255,0.04)",
-              alignItems: "center",
-              justifyContent: "center",
-              marginRight: 20,
-            }}
-          >
+        <View style={agendarStyles.infoCard}>
+          <View style={agendarStyles.iconBox}>
             <Feather name={theme.icon} size={28} color={theme.color} />
           </View>
           <View>
-            <Text style={{ color: "#94A3B8", fontSize: 16 }}>Duración</Text>
-            <Text
-              style={[
-                { fontSize: 22, fontWeight: "bold" },
-                { color: theme.color },
-              ]}
-            >
+            <Text style={agendarStyles.durationLabel}>Duración</Text>
+            <Text style={[agendarStyles.durationValue, { color: theme.color }]}>
               {servicio.duration} min
             </Text>
           </View>
         </View>
 
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 15,
-          }}
-        >
+        <View style={agendarStyles.sectionHeader}>
           <Feather name="calendar" size={20} color="#FF6B8A" />
-          <Text style={{ color: "#ffffff", fontSize: 18, fontWeight: "600" }}>
-            {" "}
-            Fecha
-          </Text>
+          <Text style={agendarStyles.sectionTitle}>Fecha</Text>
         </View>
 
-        <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-            marginBottom: 20,
-          }}
-        >
+        <View style={agendarStyles.gridContainer}>
           {fechasDisponibles.map((f) => (
             <TouchableOpacity
               key={f}
               style={[
-                {
-                  backgroundColor: "rgba(255,255,255,0.03)",
-                  paddingVertical: 14,
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: "rgba(255,255,255,0.08)",
-                  marginBottom: 12,
-                  width: "31%",
-                  alignItems: "center",
-                },
-                fecha === f && {
-                  borderColor: theme.color,
-                  backgroundColor: "rgba(255,255,255,0.06)",
-                },
+                agendarStyles.dateItem,
+                fecha === f && { borderColor: theme.color, backgroundColor: "rgba(255,255,255,0.06)" }
               ]}
               onPress={() => setFecha(f)}
             >
-              <Text
-                style={[
-                  { color: "#94A3B8", fontSize: 15 },
-                  fecha === f && { color: theme.color },
-                ]}
-              >
+              <Text style={[agendarStyles.dateText, fecha === f && { color: theme.color }]}>
                 {f}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 15,
-          }}
-        >
+        <View style={agendarStyles.sectionHeader}>
           <Feather name="clock" size={20} color="#FF6B8A" />
-          <Text style={{ color: "#ffffff", fontSize: 18, fontWeight: "600" }}>
-            {" "}
-            Horarios Disponibles
-          </Text>
+          <Text style={agendarStyles.sectionTitle}>Horarios Disponibles</Text>
         </View>
 
-        <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-            marginBottom: 20,
-          }}
-        >
+        <View style={agendarStyles.gridContainer}>
           {horasGeneradas.map((h) => (
             <TouchableOpacity
               key={h}
               disabled={horasOcupadas.includes(h)}
               style={[
-                {
-                  backgroundColor: "rgba(255,255,255,0.03)",
-                  paddingVertical: 14,
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: "rgba(255,255,255,0.08)",
-                  marginBottom: 12,
-                  width: "23%",
-                  alignItems: "center",
-                },
-                hora === h && {
-                  borderColor: theme.color,
-                  backgroundColor: "rgba(255,255,255,0.06)",
-                },
-                horasOcupadas.includes(h) && { opacity: 0.3 },
+                agendarStyles.timeItem,
+                hora === h && { borderColor: theme.color, backgroundColor: "rgba(255,255,255,0.06)" },
+                horasOcupadas.includes(h) && { opacity: 0.3 }
               ]}
               onPress={() => setHora(h)}
             >
-              <Text
-                style={[
-                  { color: "#94A3B8", fontSize: 15 },
-                  hora === h && { color: theme.color },
-                ]}
-              >
+              <Text style={[agendarStyles.timeText, hora === h && { color: theme.color }]}>
                 {h}
               </Text>
             </TouchableOpacity>

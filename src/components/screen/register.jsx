@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { View, Text,TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, ScrollView, Platform } from "react-native";
 import { Logo, ButtonGradient, BackgroundWaves, registerStyles } from "../styles/globalStyles";
 import { showAlert } from "../utils/alertMessage";
 import { auth, db } from "../../data/firebaseconfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { LinearGradient } from "expo-linear-gradient";
-import { Feather } from "@expo/vector-icons"; //https://icons.expo.fyi/Index
+import { Feather } from "@expo/vector-icons";
 
 export default function Register({ navigation }) {
   const [email, setEmail] = useState("");
@@ -28,17 +28,13 @@ export default function Register({ navigation }) {
 
     setLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Guardamos en la colección usuarios para que ForgotPassword pueda validar
       await setDoc(doc(db, "usuarios", user.uid), {
         email: email.toLowerCase().trim(),
         uid: user.uid,
+        rol:"usuario",
         creadoEn: new Date(),
       });
 
@@ -51,95 +47,76 @@ export default function Register({ navigation }) {
   };
 
   return (
-    <LinearGradient
-      colors={["#16132b", "#0F172A", "#080c17"]}
-      style={registerStyles.mainContainer}
-    >
+    <LinearGradient colors={["#16132b", "#0F172A", "#080c17"]} style={registerStyles.mainContainer}>
       <BackgroundWaves />
-      <View style={registerStyles.contentContainer}>
-        <Logo size={100} />
-        <Text style={registerStyles.title}>KronoApp</Text>
-        <Text style={registerStyles.subTitle}>Registrar su cuenta</Text>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={registerStyles.keyboardView}>
+        <ScrollView 
+          contentContainerStyle={registerStyles.scrollGrow}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={registerStyles.contentContainer}>
+            <Logo size={100} />
+            <Text style={registerStyles.title}>KronoApp</Text>
+            <Text style={registerStyles.subTitle}>Registrar su cuenta</Text>
 
-        <View style={registerStyles.inputWrapper}>
-          <Feather
-            name="mail"
-            size={20}
-            color="#FF6B8A"
-            style={registerStyles.iconLeft}
-          />
-          <TextInput
-            onChangeText={setEmail}
-            value={email}
-            placeholder="correo@ejemplo.com"
-            placeholderTextColor="#64748B"
-            style={registerStyles.input}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-        </View>
+            <View style={registerStyles.inputWrapper}>
+              <Feather name="mail" size={20} color="#FF6B8A" style={registerStyles.iconLeft} />
+              <TextInput
+                onChangeText={setEmail}
+                value={email}
+                placeholder="correo@ejemplo.com"
+                placeholderTextColor="#64748B"
+                style={registerStyles.input}
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
+            </View>
 
-        <View style={registerStyles.inputWrapper}>
-          <Feather
-            name="lock"
-            size={20}
-            color="#FF6B8A"
-            style={registerStyles.iconLeft}
-          />
-          <TextInput
-            onChangeText={setPassword}
-            value={password}
-            placeholder="Contraseña"
-            placeholderTextColor="#64748B"
-            secureTextEntry={!showPassword}
-            style={registerStyles.input}
-          />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Feather
-              name={showPassword ? "eye" : "eye-off"}
-              size={20}
-              color="#64748B"
-            />
-          </TouchableOpacity>
-        </View>
+            <View style={registerStyles.inputWrapper}>
+              <Feather name="lock" size={20} color="#FF6B8A" style={registerStyles.iconLeft} />
+              <TextInput
+                onChangeText={setPassword}
+                value={password}
+                placeholder="Contraseña"
+                placeholderTextColor="#64748B"
+                secureTextEntry={!showPassword}
+                style={registerStyles.input}
+              />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                <Feather name={showPassword ? "eye" : "eye-off"} size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
 
-        <View style={registerStyles.inputWrapper}>
-          <Feather
-            name="lock"
-            size={20}
-            color="#FF6B8A"
-            style={registerStyles.iconLeft}
-          />
-          <TextInput
-            onChangeText={setRepeatPassword}
-            value={repeatPassword}
-            placeholder="Repetir Contraseña"
-            placeholderTextColor="#64748B"
-            secureTextEntry={!showPassword}
-            style={registerStyles.input}
-          />
-        </View>
+            <View style={registerStyles.inputWrapper}>
+              <Feather name="lock" size={20} color="#FF6B8A" style={registerStyles.iconLeft} />
+              <TextInput
+                onChangeText={setRepeatPassword}
+                value={repeatPassword}
+                placeholder="Repetir Contraseña"
+                placeholderTextColor="#64748B"
+                secureTextEntry={!showPassword}
+                style={registerStyles.input}
+              />
+            </View>
 
-        <View style={{ marginTop: 20, width: "100%", alignItems: "center" }}>
-          {loading ? (
-            <ActivityIndicator size="large" color="#FF2DA0" />
-          ) : (
-            <ButtonGradient
-              text="Registrarse"
-              onPress={handleCreateAccount}
-              width="100%"
-              height={55}
-            />
-          )}
-        </View>
+            <View style={registerStyles.loaderWrapper}>
+              {loading ? (
+                <ActivityIndicator size="large" color="#FF2DA0" />
+              ) : (
+                <ButtonGradient text="Registrarse" onPress={handleCreateAccount} width="100%" height={55} />
+              )}
+            </View>
 
-        <View style={registerStyles.footerContainer}>
-          <Text style={registerStyles.footerText}>¿Ya tienes cuenta?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text style={registerStyles.loginLinkText}>Iniciar Sesión</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+            <View style={registerStyles.footerContainer}>
+              <Text style={registerStyles.footerText}>¿Ya tienes cuenta?</Text>
+              <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                <Text style={registerStyles.loginLinkText}>Iniciar Sesión</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 }
