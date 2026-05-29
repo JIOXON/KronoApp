@@ -1,40 +1,40 @@
 {
   "expo": {
-    "name": "KronoApp",
-    "slug": "turnosapp",
-    "version": "1.3.0",
-    "orientation": "portrait",
-    "icon": "./assets/icont.png",
-    "userInterfaceStyle": "light",
+    "name": "KronoApp", // El nombre que aparece bajo el icono en el celular
+    "slug": "turnosapp", // El identificador único del proyecto en la plataforma Expo
+    "version": "1.3.0", // Versión actual de tu app para actualizaciones
+    "orientation": "portrait", // Bloquea la app en modo vertical
+    "icon": "./assets/icont.png", // El icono general de la app
+    "userInterfaceStyle": "light", // Fuerza el tema claro (o 'automatic' para respetar el sistema)
     "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/splash-icon.png", // La pantalla de carga inicial
+      "resizeMode": "contain", // Ajusta la imagen sin deformarla
+      "backgroundColor": "#ffffff" // Fondo de la pantalla de carga
     },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.camilojioxosteam.turnosapp",
+      "supportsTablet": true, // Permite que la app se instale en iPads
+      "bundleIdentifier": "com.camilojioxosteam.turnosapp", // ID único para el ecosistema de Apple
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false // Declara que la app no usa cifrado especial (facilita la subida a la App Store)
       }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#1E1E1E",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#1E1E1E", // Fondo del icono adaptativo
+        "foregroundImage": "./assets/android-icon-foreground.png", // Logo frontal
+        "backgroundImage": "./assets/android-icon-background.png", // Imagen de fondo para el icono
+        "monochromeImage": "./assets/android-icon-monochrome.png" // Icono para temas oscuros/monocromáticos
       },
-      "package": "com.camilojioxosteam.turnosapp"
+      "package": "com.camilojioxosteam.turnosapp" // ID único para la Play Store de Google
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png" // Icono que aparece en la pestaña del navegador
     },
     "extra": {
       "eas": {
-        "projectId": "b588a2a1-595a-4913-8ed9-55031ba4f637"
+        "projectId": "b588a2a1-595a-4913-8ed9-55031ba4f637" // CLAVE: Conecta tu app local con los servidores de EAS Build
       }
     },
-    "owner": "camilojioxos-team"
+    "owner": "camilojioxos-team" // Usuario o equipo dueño del proyecto en Expo
   }
 }
