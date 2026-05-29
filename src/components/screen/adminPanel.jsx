@@ -167,31 +167,52 @@ export default function AdminPanel({ navigation }) {
     setLoadingTurnos(false);
   };
 
+const enviarCorreoOculto = async (correoCliente, fecha, hora, servicioNombre) => {
+  if (!correoCliente) return;
+
+  try {
+    await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        service_id: "service_gnpppiw",   // Ej: service_abcd123
+        template_id: "template_kge4h4d", // Ej: template_xyz987
+        user_id: "vOODSRU20oPnrAnkC",      // Ej: aBcDeFgHiJkLmNoP
+        template_params: {
+          to_email: correoCliente, // Manda el correo a la dirección del cliente
+          fecha: fecha,
+          hora: hora,
+          servicio: servicioNombre,
+        },
+      }),
+    });
+    console.log("Correo automático enviado");
+  } catch (error) {
+    console.log("Error de EmailJS:", error);
+  }
+};
+
 const handleCancelTurno = (turno) => {
   showAlert("Cancelar Turno", "¿Estás seguro de cancelar este turno?", async () => {
     try {
-      // 1. Cancelamos el turno en Firebase
+      // 1. Cancelamos en la base de datos
       await updateDoc(doc(db, "turnos", turno.id), { estado: "cancelado" });
       
-      // 2. Buscamos el token del celular del usuario dueño de la cita
+      // 2. Disparamos la Notificación Push al celular
       const userDoc = await getDoc(doc(db, "usuarios", turno.clienteId));
       if (userDoc.exists() && userDoc.data().expoPushToken) {
         const tokenDelUsuario = userDoc.data().expoPushToken;
-        
-        // 3. Enviamos la notificación Push (al celular)
         await enviarNotificacionPush(tokenDelUsuario, turno.fecha, turno.hora);
       }
 
-      // 4. ¡NUEVO! Enviamos el correo electrónico de cancelación (al Gmail del usuario)
-      // Usamos turno.clienteEmail porque ya lo guardábamos al agendar el turno
-      await enviarCorreoCancelacion(turno.clienteEmail, turno.fecha, turno.hora, turno.servicioNombre);
+      // 3. Disparamos el correo automático silencioso
+      await enviarCorreoOculto(turno.clienteEmail, turno.fecha, turno.hora, turno.servicioNombre);
 
-      // 5. Actualizamos la lista visualmente en el panel
+      // 4. Actualizamos la lista visual
       setUserTurnos(prev => prev.map(t => t.id === turno.id ? { ...t, estado: "cancelado" } : t));
       showAlert("Éxito", "cancel-success");
       
     } catch (error) {
-      console.log(error);
       showAlert("Error", "cancel-error");
     }
   });
