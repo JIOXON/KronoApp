@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity } from "react-native";
-// Re-agregamos runTransaction para máxima seguridad en la base de datos
 import { collection, query, where, getDocs, doc, runTransaction } from "firebase/firestore";
 import { Navbar, BackgroundWaves, ButtonGradient, agendarStyles } from "../styles/globalStyles";
 import { showAlert } from "../utils/alertMessage";
@@ -107,7 +106,7 @@ export default function Agendar({ route, navigation }) {
 
         if (turnoDoc.exists() && turnoDoc.data().estado !== "cancelado" && turnoDoc.data().estado !== "finalizado") {
           if (idEditar && idEditar === turnoIdGenerado) {
-            // El usuario actual es el dueño de la hora, no hacemos nada que dispare el error
+
           } else {
             throw new Error("occupied");
           }

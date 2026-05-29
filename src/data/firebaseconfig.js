@@ -2,7 +2,6 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { initializeAuth, getReactNativePersistence, browserLocalPersistence } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// IMPORTANTE: Traemos Platform para detectar si estamos en web o móvil
 import { Platform } from "react-native";
 
 export const firebaseConfig = {
@@ -16,7 +15,6 @@ export const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// Lógica condicional: Detecta automáticamente el entorno
 export const auth = initializeAuth(app, {
   persistence: Platform.OS === "web" ? browserLocalPersistence : getReactNativePersistence(AsyncStorage)
 });

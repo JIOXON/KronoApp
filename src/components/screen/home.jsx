@@ -59,7 +59,7 @@ export default function Home({ navigation }) {
         ) : (
           <View style={homeStyles.cardsWrapper}>
             <ActionCard
-              title="Ver servicios"
+              title="Agendar Turnos"
               description="Explora todos los servicios disponibles."
               iconName="calendar"
               onPress={() => navigation.navigate("Services")}

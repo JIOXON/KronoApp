@@ -4,7 +4,7 @@ export const showAlert = (title, code, onPress = () => {}) => {
   let message = "";
 
   switch (code) {
-    // Errores de la autenticación
+    // Errores de la autenticacion
     case "auth/invalid-email": message = "El correo no es válido."; break;
     case "auth/user-not-found": message = "No existe ninguna cuenta vinculada a este correo."; break;
     case "auth/wrong-password": message = "La contraseña es incorrecta."; break;

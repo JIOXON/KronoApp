@@ -3,9 +3,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ActivityIndicator, View } from "react-native";
 import { onAuthStateChanged } from "firebase/auth";
-
-// IMPORTANTE: Verifica que esta ruta apunte correctamente a tu archivo de configuración.
-// Si tu carpeta "data" no está dentro de "src", quita el "src/" de la ruta.
 import { auth } from "./src/data/firebaseconfig"; 
 import Home from "./src/components/screen/home";
 import Login from "./src/components/screen/login";
@@ -24,16 +21,14 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Este vigilante revisa si hay una sesión guardada en el teléfono
     const unsubscribe = onAuthStateChanged(auth, (usuarioActual) => {
       setUser(usuarioActual);
-      setLoading(false); // Apagamos la pantalla de carga cuando Firebase responde
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Mientras verificamos la sesión, mostramos una pantalla de carga oscura con el estilo de tu app
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", backgroundColor: "#16132b" }}>
@@ -46,7 +41,6 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          // Si el usuario tiene sesión, SOLAMENTE existen estas pantallas para él
           <>
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Services" component={Services} />
@@ -56,7 +50,6 @@ export default function App() {
             <Stack.Screen name="AdminPanel" component={AdminPanel} />
           </>
         ) : (
-          // Si NO tiene sesión iniciada, lo mantenemos atrapado en el Login/Registro
           <>
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="ForgotPassword" component={ForgotPassword} />

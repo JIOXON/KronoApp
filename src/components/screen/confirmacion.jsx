@@ -8,8 +8,6 @@ export default function Confirmacion({ route, navigation }) {
   const { servicio, fecha, hora } = route.params;
 
   const irAlInicio = () => {
-    // Al usar reset, destruimos la pantalla de "Agendar" del historial
-    // para que el usuario aterrice limpio en el Home.
     navigation.reset({ index: 0, routes: [{ name: "Home" }] });
   };
 
@@ -42,8 +40,6 @@ export default function Confirmacion({ route, navigation }) {
             </View>
           </View>
         </View>
-
-        {/* Nuevo botón centralizado para volver al Home */}
         <View style={{ width: "100%", marginTop: 10 }}>
           <ButtonGradient 
             text="Volver al Inicio" 

@@ -18,26 +18,25 @@ export default function MisTurnos({ navigation }) {
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const lista = [];
-      const ahora = new Date(); // Obtenemos la fecha y hora exacta de este instante
+      const ahora = new Date();
 
       snapshot.docs.forEach((documento) => {
         let data = documento.data();
         let id = documento.id;
 
-        // LOGICA DE VENCIMIENTO: Si el turno está confirmado, evaluamos si ya pasó
+
         if (data.estado === "confirmado" && data.fecha && data.hora) {
-          // Extraemos los números del texto "DD/MM/YYYY" y "HH:MM"
+
           const [dia, mes, anio] = data.fecha.split("/");
           const [hora, min] = data.hora.split(":");
           
-          // Creamos una fecha matemática en JavaScript (el mes empieza en 0, por eso mes - 1)
+
           const fechaDelTurno = new Date(anio, mes - 1, dia, hora, min);
 
-          // Si la fecha del turno es menor (más antigua) que el momento actual:
+
           if (fechaDelTurno < ahora) {
-            data.estado = "finalizado"; // Actualizamos visualmente al instante
+            data.estado = "finalizado";
             
-            // Y le avisamos a Firebase en segundo plano que lo guarde así
             updateDoc(doc(db, "turnos", id), { estado: "finalizado" })
               .catch((error) => console.log("Error caducando turno", error));
           }
@@ -46,7 +45,6 @@ export default function MisTurnos({ navigation }) {
         lista.push({ id, ...data });
       });
 
-      // Ordenamos de más reciente a más antiguo
       setTurnos(lista.sort((a, b) => b.creadoEn - a.creadoEn));
       setCargando(false);
     });
@@ -67,9 +65,9 @@ export default function MisTurnos({ navigation }) {
 
   const getStatusColor = (estado) => {
     switch (estado) {
-      case "confirmado": return "#22C55E"; // Verde
-      case "cancelado": return "#EF4444"; // Rojo
-      case "finalizado": return "#64748B"; // Gris/Pizarra (Nuevo color para los finalizados)
+      case "confirmado": return "#22C55E";
+      case "cancelado": return "#EF4444"; 
+      case "finalizado": return "#64748B"; 
       default: return "#94A3B8";
     }
   };
@@ -85,8 +83,7 @@ export default function MisTurnos({ navigation }) {
         <Text style={[misTurnosStyles.statusText, { color: statusColor }]}>
           Estado: {item.estado?.toUpperCase()}
         </Text>
-        
-        {/* Los botones SOLO aparecen si el estado es 'confirmado'. Si cambió a 'finalizado' arriba, estos botones simplemente desaparecen. */}
+
         {item.estado === "confirmado" && (
           <View style={misTurnosStyles.buttonsContainer}>
             <TouchableOpacity

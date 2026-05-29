@@ -8,7 +8,6 @@ import { doc, setDoc } from "firebase/firestore";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 
-// Herramientas de notificaciones
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 
@@ -83,7 +82,6 @@ export default function Register({ navigation }) {
       <BackgroundWaves />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={registerStyles.keyboardView}>
         
-        {/* MAGIA DE CENTRADO: Forzamos el flexGrow y centrado directamente aquí */}
         <ScrollView 
           contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }} 
           keyboardShouldPersistTaps="handled" 
@@ -112,7 +110,6 @@ export default function Register({ navigation }) {
               <TextInput onChangeText={setRepeatPassword} value={repeatPassword} placeholder="Repetir Contraseña" placeholderTextColor="#64748B" secureTextEntry={!showPassword} style={registerStyles.input} />
             </View>
 
-            {/* MAGIA DEL BOTÓN: Le obligamos a tomar el 100% del ancho disponible */}
             <View style={{ width: "100%", marginTop: 15, alignItems: "center" }}>
               {loading ? (
                 <ActivityIndicator size="large" color="#FF2DA0" />

@@ -8,7 +8,6 @@ import { auth, db } from "../../data/firebaseconfig";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons"; 
 
-// Herramientas de notificaciones
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 
@@ -17,8 +16,7 @@ Notifications.setNotificationHandler({
 });
 
 async function registerForPushNotificationsAsync() {
-  // Si estamos en la web o en la app de pruebas (Expo Go), cancelamos el registro
-  // para evitar pantallas rojas o crasheos.
+
   if (__DEV__ || Platform.OS === 'web') {
     console.log("Notificaciones omitidas (Entorno Web o Desarrollo)");
     return null;
@@ -58,13 +56,11 @@ export default function Login({ navigation }) {
 
     setLoading(true);
     try {
-      // 1. Iniciamos sesión
+
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       
-      // 2. Revisamos/Pedimos el token de notificaciones
       const pushToken = await registerForPushNotificationsAsync();
-      
-      // 3. Actualizamos el token en la base de datos de este usuario
+
       if (pushToken) {
         await updateDoc(doc(db, "usuarios", userCredential.user.uid), {
           expoPushToken: pushToken
@@ -87,7 +83,7 @@ export default function Login({ navigation }) {
       style={loginStyles.keyboardView}
     >
       <ScrollView 
-        contentContainerStyle={loginStyles.scrollGrow} // <--- NOMBRE CORREGIDO AQUÍ
+        contentContainerStyle={loginStyles.scrollGrow}
         keyboardShouldPersistTaps="handled" 
         showsVerticalScrollIndicator={false}
       >

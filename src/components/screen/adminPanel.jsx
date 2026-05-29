@@ -21,7 +21,6 @@ const THEME_OPTIONS = [
   { id: "general", icon: "grid", color: "#FFA94D", label: "General" },
 ];
 
-// FUNCIÓN PARA ENVIAR EL PUSH
 const enviarNotificacionPush = async (expoPushToken, fecha, hora) => {
   if (!expoPushToken) return;
 
@@ -42,33 +41,6 @@ const enviarNotificacionPush = async (expoPushToken, fecha, hora) => {
     },
     body: JSON.stringify(mensaje),
   });
-};
-
-const enviarCorreoCancelacion = async (correoCliente, fecha, hora, servicioNombre) => {
-  if (!correoCliente) return;
-
-  try {
-    await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        service_id: "TU_SERVICE_ID",   // Reemplaza esto con el ID de EmailJS
-        template_id: "TU_TEMPLATE_ID", // Reemplaza esto con el ID de tu plantilla
-        user_id: "TU_PUBLIC_KEY",      // Reemplaza esto con tu Public Key de EmailJS
-        template_params: {
-          to_email: correoCliente, // Esto inyecta el correo del usuario
-          fecha: fecha,
-          hora: hora,
-          servicio: servicioNombre,
-        },
-      }),
-    });
-    console.log("Correo enviado con éxito");
-  } catch (error) {
-    console.log("Error al enviar el correo:", error);
-  }
 };
 
 export default function AdminPanel({ navigation }) {
@@ -167,48 +139,18 @@ export default function AdminPanel({ navigation }) {
     setLoadingTurnos(false);
   };
 
-const enviarCorreoOculto = async (correoCliente, fecha, hora, servicioNombre) => {
-  if (!correoCliente) return;
-
-  try {
-    await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        service_id: "service_gnpppiw",   // Ej: service_abcd123
-        template_id: "template_kge4h4d", // Ej: template_xyz987
-        user_id: "vOODSRU20oPnrAnkC",      // Ej: aBcDeFgHiJkLmNoP
-        template_params: {
-          to_email: correoCliente, // Manda el correo a la dirección del cliente
-          fecha: fecha,
-          hora: hora,
-          servicio: servicioNombre,
-        },
-      }),
-    });
-    console.log("Correo automático enviado");
-  } catch (error) {
-    console.log("Error de EmailJS:", error);
-  }
-};
-
 const handleCancelTurno = (turno) => {
   showAlert("Cancelar Turno", "¿Estás seguro de cancelar este turno?", async () => {
     try {
-      // 1. Cancelamos en la base de datos
+
       await updateDoc(doc(db, "turnos", turno.id), { estado: "cancelado" });
-      
-      // 2. Disparamos la Notificación Push al celular
+
       const userDoc = await getDoc(doc(db, "usuarios", turno.clienteId));
       if (userDoc.exists() && userDoc.data().expoPushToken) {
         const tokenDelUsuario = userDoc.data().expoPushToken;
         await enviarNotificacionPush(tokenDelUsuario, turno.fecha, turno.hora);
       }
 
-      // 3. Disparamos el correo automático silencioso
-      await enviarCorreoOculto(turno.clienteEmail, turno.fecha, turno.hora, turno.servicioNombre);
-
-      // 4. Actualizamos la lista visual
       setUserTurnos(prev => prev.map(t => t.id === turno.id ? { ...t, estado: "cancelado" } : t));
       showAlert("Éxito", "cancel-success");
       
@@ -227,6 +169,7 @@ const handleCancelTurno = (turno) => {
     }
   };
 
+//Estilos y estructura del componente
   return (
     <LinearGradient colors={["#16132b", "#0F172A", "#080c17"]} style={adminStyles.mainContainer}>
       <BackgroundWaves />
