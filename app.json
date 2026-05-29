@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "KronoApp",
-    "slug": "KronoApp",
-    "version": "1.1.1",
+    "slug": "turnosapp",
+    "version": "1.2.5",
     "orientation": "portrait",
     "icon": "./assets/icont.png",
     "userInterfaceStyle": "light",
@@ -13,7 +13,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.KronoApp",
+      "bundleIdentifier": "com.camilojioxosteam.turnosapp",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -25,16 +25,16 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "com.anonymous.KronoApp"
+      "package": "com.camilojioxosteam.turnosapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "14c2cb21-2dbf-4884-a5cc-414b122c92d5"
+        "projectId": "b588a2a1-595a-4913-8ed9-55031ba4f637"
       }
     },
-    "owner": "jioxon"
+    "owner": "camilojioxos-team"
   }
 }

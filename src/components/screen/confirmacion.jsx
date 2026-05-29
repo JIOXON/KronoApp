@@ -1,16 +1,24 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { Navbar, BackgroundWaves, confStyles} from "../styles/globalStyles";
+import { Navbar, BackgroundWaves, ButtonGradient, confStyles } from "../styles/globalStyles";
 import { LinearGradient } from "expo-linear-gradient";
-import { Feather } from "@expo/vector-icons"; 
+import { Feather } from "@expo/vector-icons";
 
 export default function Confirmacion({ route, navigation }) {
   const { servicio, fecha, hora } = route.params;
 
+  const irAlInicio = () => {
+    // Al usar reset, destruimos la pantalla de "Agendar" del historial
+    // para que el usuario aterrice limpio en el Home.
+    navigation.reset({ index: 0, routes: [{ name: "Home" }] });
+  };
+
   return (
     <LinearGradient colors={["#16132b", "#0F172A", "#080c17"]} style={confStyles.mainContainer}>
       <BackgroundWaves />
-      <Navbar navigation={navigation} />
+      
+      <Navbar navigation={navigation} hideBackButton={true} />
+      
       <View style={confStyles.contentContainer}>
         <View style={confStyles.iconCircle}>
           <Feather name="check-circle" size={80} color="#22C55E" />
@@ -22,6 +30,7 @@ export default function Confirmacion({ route, navigation }) {
           <Text style={confStyles.serviceLabel}>Servicio</Text>
           <Text style={confStyles.serviceValue}>{servicio}</Text>
           <View style={confStyles.divider} />
+          
           <View style={confStyles.dateTimeRow}>
             <View style={confStyles.infoBox}>
               <Feather name="calendar" size={18} color="#FF6B8A" />
@@ -33,6 +42,18 @@ export default function Confirmacion({ route, navigation }) {
             </View>
           </View>
         </View>
+
+        {/* Nuevo botón centralizado para volver al Home */}
+        <View style={{ width: "100%", marginTop: 10 }}>
+          <ButtonGradient 
+            text="Volver al Inicio" 
+            iconName="home" 
+            onPress={irAlInicio} 
+            width="100%" 
+            height={55} 
+          />
+        </View>
+
       </View>
     </LinearGradient>
   );

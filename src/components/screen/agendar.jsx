@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity } from "react-native";
-import { collection, addDoc, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
+// Re-agregamos runTransaction para máxima seguridad en la base de datos
+import { collection, query, where, getDocs, doc, runTransaction } from "firebase/firestore";
 import { Navbar, BackgroundWaves, ButtonGradient, agendarStyles } from "../styles/globalStyles";
 import { showAlert } from "../utils/alertMessage";
 import { LinearGradient } from "expo-linear-gradient";
@@ -20,12 +21,9 @@ export default function Agendar({ route, navigation }) {
 
   const getServiceTheme = (nombre) => {
     const nameLower = nombre?.toLowerCase() || "";
-    if (nameLower.includes("soporte") || nameLower.includes("reparacion"))
-      return { icon: "headphones", color: "#FF4D79" };
-    if (nameLower.includes("psicologia") || nameLower.includes("mente"))
-      return { icon: "activity", color: "#22C55E" };
-    if (nameLower.includes("medicina") || nameLower.includes("medico"))
-      return { icon: "plus-square", color: "#38BDF8" };
+    if (nameLower.includes("soporte") || nameLower.includes("reparacion")) return { icon: "headphones", color: "#FF4D79" };
+    if (nameLower.includes("psicologia") || nameLower.includes("mente")) return { icon: "activity", color: "#22C55E" };
+    if (nameLower.includes("medicina") || nameLower.includes("medico")) return { icon: "plus-square", color: "#38BDF8" };
     return { icon: "grid", color: "#FFA94D" };
   };
 
@@ -49,11 +47,9 @@ export default function Agendar({ route, navigation }) {
   const generarFechasFuturas = (diasAProyectar = 14) => {
     let fechas = [];
     let fechaActual = new Date();
-
     while (fechas.length < diasAProyectar) {
       fechaActual.setDate(fechaActual.getDate() + 1);
       if (fechaActual.getDay() === 0) continue;
-
       let dia = fechaActual.getDate().toString().padStart(2, "0");
       let mes = (fechaActual.getMonth() + 1).toString().padStart(2, "0");
       let anio = fechaActual.getFullYear();
@@ -79,7 +75,7 @@ export default function Agendar({ route, navigation }) {
       querySnapshot.forEach((documento) => {
         const data = documento.data();
         if (idEditar && documento.id === idEditar) return;
-        if (data.estado !== "cancelado") ocupadas.push(data.hora);
+        if (data.estado !== "cancelado" && data.estado !== "finalizado") ocupadas.push(data.hora);
       });
       setHorasOcupadas(ocupadas);
     } catch (error) {
@@ -102,46 +98,61 @@ export default function Agendar({ route, navigation }) {
       return;
     }
     const user = auth.currentUser;
-    try {
-      const q = query(collection(db, "turnos"), where("fecha", "==", fecha), where("hora", "==", hora));
-      const checkSnapshot = await getDocs(q);
-      const choqueReal = checkSnapshot.docs.find(
-        (doc) => doc.id !== idEditar && doc.data().estado !== "cancelado",
-      );
+    const turnoIdGenerado = `${fecha.replace(/\//g, "-")}_${hora}`;
+    const turnoRef = doc(db, "turnos", turnoIdGenerado);
 
-      if (choqueReal) {
-        showAlert("Error", "occupied");
-        consultarDisponibilidad(fecha);
-        return;
-      }
+    try {
+      await runTransaction(db, async (transaction) => {
+        const turnoDoc = await transaction.get(turnoRef);
+
+        if (turnoDoc.exists() && turnoDoc.data().estado !== "cancelado" && turnoDoc.data().estado !== "finalizado") {
+          if (idEditar && idEditar === turnoIdGenerado) {
+            // El usuario actual es el dueño de la hora, no hacemos nada que dispare el error
+          } else {
+            throw new Error("occupied");
+          }
+        }
+
+        if (idEditar) {
+          if (idEditar !== turnoIdGenerado) {
+            const viejoTurnoRef = doc(db, "turnos", idEditar);
+            transaction.update(viejoTurnoRef, { estado: "cancelado" });
+            transaction.set(turnoRef, {
+              clienteId: user.uid, clienteEmail: user.email, servicioId: servicio.id || "sin-id",
+              servicioNombre: servicio.name, servicioDuracion: servicio.duration, fecha, hora,
+              creadoEn: new Date(), estado: "confirmado",
+            });
+          } else {
+            transaction.update(turnoRef, { actualizadoEn: new Date(), estado: "confirmado" });
+          }
+        } else {
+          transaction.set(turnoRef, {
+            clienteId: user.uid, clienteEmail: user.email, servicioId: servicio.id || "sin-id",
+            servicioNombre: servicio.name, servicioDuracion: servicio.duration, fecha, hora,
+            creadoEn: new Date(), estado: "confirmado",
+          });
+        }
+      });
 
       if (idEditar) {
-        await updateDoc(doc(db, "turnos", idEditar), {
-          fecha,
-          hora,
-          servicioDuracion: servicio.duration,
-          actualizadoEn: new Date(),
-          estado: "confirmado",
-        });
         showAlert("Éxito", "schedule-success", () =>
-          navigation.reset({ index: 1, routes: [{ name: "Home" }, { name: "MisTurnos" }] }),
+          navigation.reset({ index: 1, routes: [{ name: "Home" }, { name: "MisTurnos" }] })
         );
       } else {
-        await addDoc(collection(db, "turnos"), {
-          clienteId: user.uid,
-          clienteEmail: user.email,
-          servicioId: servicio.id || "sin-id",
-          servicioNombre: servicio.name,
-          servicioDuracion: servicio.duration,
-          fecha,
-          hora,
-          creadoEn: new Date(),
-          estado: "confirmado",
+        navigation.reset({ 
+          index: 0, 
+          routes: [{ name: "Confirmacion", params: { servicio: servicio.name, fecha, hora } }] 
         });
-        navigation.navigate("Confirmacion", { servicio: servicio.name, fecha, hora });
       }
+
     } catch (error) {
-      showAlert("Error", "generic-error");
+      if (error.message === "occupied") {
+        showAlert("Error", "occupied");
+        consultarDisponibilidad(fecha); 
+      } else {
+        console.error(error);
+        showAlert("Error", "generic-error");
+      }
     }
   };
 

@@ -135,12 +135,16 @@ const BackgroundWaves = () => (
       <Path
         fill="#3B154D"
         fillOpacity="0.6"
-        d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,170.7C960,160,1056,192,1152,197.3C1248,203,1344,181,1392,170.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+        d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,170.7C960,160,
+        1056,192,1152,197.3C1248,203,1344,181,1392,170.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,
+        320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
       />
       <Path
         fill="#1E133D"
         fillOpacity="0.8"
-        d="M0,256L48,245.3C96,235,192,213,288,213.3C384,213,480,235,576,234.7C672,235,768,213,864,186.7C960,160,1056,128,1152,133.3C1248,139,1344,181,1392,202.7L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+        d="M0,256L48,245.3C96,235,192,213,288,213.3C384,213,480,235,576,234.7C672,235,768,213,864,186.7C960,
+        160,1056,128,1152,133.3C1248,139,1344,181,1392,202.7L1440,224L1440,320L1392,320C1344,320,1248,320,1152,
+        320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
       />
     </Svg>
   </View>
@@ -161,10 +165,12 @@ const baseStyles = {
 
 const authBaseStyles = {
   contentContainer: {
-    flex: 1,
+    flexGrow: 1, // Permite que el contenido crezca
+    width: "100%", // Ocupa todo el ancho
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center", // <--- Esto es lo que centra verticalmente
     paddingHorizontal: 30,
+    paddingVertical: 50, // Espacio extra para que no pegue a los bordes
   },
   title: {
     color: "#ffffff",
@@ -206,14 +212,14 @@ const adminStyles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
   },
-  subtitle: { color: "#fff", fontSize: 16, marginTop: 15, marginBottom: 15 },
+  label: { color: "#fff", fontSize: 16, marginTop: 15, marginBottom: 15 },
   gridContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
     marginBottom: 30,
   },
-  gridItem: {
+  themeItem: {
     width: "23%",
     aspectRatio: 1,
     justifyContent: "center",
@@ -222,12 +228,88 @@ const adminStyles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 12,
   },
-  gridItemText: {
+  themeLabel: {
     color: "#fff",
     fontSize: 10,
     marginTop: 5,
     textAlign: "center",
   },
+  loaderContainer: { marginTop: 20 },
+
+  // Nuevos estilos: Pestañas (Tabs)
+  tabContainer: {
+    flexDirection: "row",
+    backgroundColor: "rgba(255,255,255,0.03)",
+    borderRadius: 30,
+    padding: 5,
+    marginBottom: 25,
+  },
+  tabBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: "center",
+    borderRadius: 25,
+  },
+  tabBtnActive: { backgroundColor: "rgba(255,255,255,0.1)" },
+  tabText: { color: "#94A3B8", fontWeight: "bold", fontSize: 15 },
+  tabTextActive: { color: "#FF6B8A" },
+
+  // Nuevos estilos: Desplegable de Usuarios (Acordeón)
+  userCard: {
+    backgroundColor: "rgba(255,255,255,0.03)",
+    borderRadius: 15,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+    overflow: "hidden",
+  },
+  userHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 20,
+  },
+  userEmail: {
+    flex: 1,
+    color: "#E2E8F0",
+    fontSize: 16,
+    fontWeight: "600",
+    marginLeft: 15,
+  },
+  turnosContainer: {
+    backgroundColor: "rgba(0,0,0,0.2)",
+    padding: 15,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(255,255,255,0.05)",
+  },
+  noTurnosText: {
+    color: "#94A3B8",
+    textAlign: "center",
+    fontStyle: "italic",
+    marginVertical: 10,
+  },
+  turnoAdminCard: {
+    backgroundColor: "rgba(255,255,255,0.02)",
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 10,
+    borderLeftWidth: 4,
+  },
+  turnoAdminTitle: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  turnoAdminDate: { color: "#94A3B8", fontSize: 14, marginBottom: 5 },
+  turnoAdminStatus: { fontSize: 13, fontWeight: "bold", marginBottom: 10 },
+  cancelarAdminBtn: {
+    backgroundColor: "#7f1d1d",
+    paddingVertical: 8,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  cancelarAdminText: { color: "#fff", fontSize: 13, fontWeight: "bold" },
 });
 
 const agendarStyles = StyleSheet.create({
@@ -412,7 +494,11 @@ const homeStyles = StyleSheet.create({
 const loginStyles = StyleSheet.create({
   mainContainer: baseStyles.mainContainer,
   keyboardView: { flex: 1 },
-  scrollGrow: { flexGrow: 1, justifyContent: "center" },
+  // CAMBIAMOS EL NOMBRE A 'scrollGrow' PARA QUE SEA CLARO
+  scrollGrow: { 
+    flexGrow: 1, 
+    justifyContent: "center" // Fuerza el centrado en el ScrollView
+  },
   contentContainer: authBaseStyles.contentContainer,
   title: { ...authBaseStyles.title, fontSize: 38, letterSpacing: 1 },
   subTitle: { ...authBaseStyles.subTitle, marginBottom: 35 },
@@ -500,7 +586,10 @@ const misTurnosStyles = StyleSheet.create({
 const registerStyles = StyleSheet.create({
   mainContainer: baseStyles.mainContainer,
   keyboardView: { flex: 1 },
-  scrollGrow: { flexGrow: 1, justifyContent: "center" },
+  scrollGrow: { 
+    flexGrow: 1, 
+    justifyContent: "center" 
+  },
   contentContainer: authBaseStyles.contentContainer,
   title: { ...authBaseStyles.title, fontSize: 32 },
   subTitle: { ...authBaseStyles.subTitle, marginBottom: 30 },
